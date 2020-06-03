@@ -24,8 +24,9 @@ class CssAbsoluteFilter(FilterBase):
     def input(self, filename=None, basename=None, **kwargs):
         if filename is not None:
             filename = os.path.normcase(os.path.abspath(filename))
-        if (not (filename and filename.startswith(self.root)) and
-                not self.find(basename)):
+        if not (
+            (filename and filename.startswith(self.root)) or self.find(basename)
+        ):
             return self.content
         self.path = basename.replace(os.sep, '/')
         self.path = self.path.lstrip('/')
@@ -73,10 +74,7 @@ class CssAbsoluteFilter(FilterBase):
         if suffix is None:
             return url
         if url.startswith(SCHEMES):
-            if "?" in url:
-                url = "%s&%s" % (url, suffix)
-            else:
-                url = "%s?%s" % (url, suffix)
+            url = "%s&%s" % (url, suffix) if "?" in url else "%s?%s" % (url, suffix)
         return url
 
     def _converter(self, matchobj, group, template):

@@ -188,10 +188,7 @@ class Compressor(object):
         Passes each hunk (file or code) to the 'input' methods
         of the compressor filters.
         """
-        content = []
-        for hunk in self.hunks(forced):
-            content.append(hunk)
-        return content
+        return [hunk for hunk in self.hunks(forced)]
 
     def precompile(self, content, kind=None, elem=None, filename=None, **kwargs):
         if not kind:

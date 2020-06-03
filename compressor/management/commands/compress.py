@@ -304,8 +304,7 @@ class Command(NoArgsCommand):
                 node._block_name = block_name
                 yield node
             else:
-                for node in self.walk_nodes(node, block_name=block_name):
-                    yield node
+                yield from self.walk_nodes(node, block_name=block_name)
 
     def handle_extensions(self, extensions=('html',)):
         """
@@ -329,13 +328,12 @@ class Command(NoArgsCommand):
         return set(ext_list)
 
     def handle_noargs(self, **options):
-        if not settings.COMPRESS_ENABLED and not options.get("force"):
+        if not (settings.COMPRESS_ENABLED or options.get("force")):
             raise CommandError(
                 "Compressor is disabled. Set the COMPRESS_ENABLED "
                 "settting or use --force to override.")
-        if not settings.COMPRESS_OFFLINE:
-            if not options.get("force"):
-                raise CommandError(
-                    "Offline compression is disabled. Set "
-                    "COMPRESS_OFFLINE or use the --force to override.")
+        if not settings.COMPRESS_OFFLINE and not options.get("force"):
+            raise CommandError(
+                "Offline compression is disabled. Set "
+                "COMPRESS_OFFLINE or use the --force to override.")
         self.compress(sys.stdout, **options)

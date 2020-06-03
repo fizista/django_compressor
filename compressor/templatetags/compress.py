@@ -90,8 +90,9 @@ class CompressorMixin(object):
             return cached_offline
 
         # Take a shortcut if we really don't have anything to do
-        if ((not settings.COMPRESS_ENABLED and
-             not settings.COMPRESS_PRECOMPILERS) and not forced):
+        if not (
+            settings.COMPRESS_ENABLED or settings.COMPRESS_PRECOMPILERS or forced
+        ):
             return self.get_original_content(context)
 
         context['compressed'] = {'name': getattr(self, 'name', None)}
@@ -191,7 +192,7 @@ def compress(parser, token):
 
     args = token.split_contents()
 
-    if not len(args) in (2, 3, 4):
+    if len(args) not in (2, 3, 4):
         raise template.TemplateSyntaxError(
             "%r tag requires either one, two or three arguments." % args[0])
 
@@ -199,14 +200,11 @@ def compress(parser, token):
 
     if len(args) >= 3:
         mode = args[2]
-        if not mode in OUTPUT_MODES:
+        if mode not in OUTPUT_MODES:
             raise template.TemplateSyntaxError(
                 "%r's second argument must be '%s' or '%s'." %
                 (args[0], OUTPUT_FILE, OUTPUT_INLINE))
     else:
         mode = OUTPUT_FILE
-    if len(args) == 4:
-        name = args[3]
-    else:
-        name = None
+    name = args[3] if len(args) == 4 else None
     return CompressorNode(nodelist, kind, mode, name)

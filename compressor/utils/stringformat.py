@@ -114,10 +114,7 @@ def _format_field(value, parts, conv, spec, want_bytes=False):
     """Format a replacement field."""
     for k, part, _ in parts:
         if k:
-            if part.isdigit():
-                value = value[int(part)]
-            else:
-                value = value[part]
+            value = value[int(part)] if part.isdigit() else value[part]
         else:
             value = getattr(value, part)
     if conv:
@@ -203,7 +200,7 @@ class FormattableString(object):
             if tail:
                 raise ValueError("Only '.' or '[' may follow ']' "
                                  "in format field specifier")
-        if name_parts and k == '[' and not literal[-1] == ']':
+        if name_parts and k == '[' and literal[-1] != ']':
             raise ValueError("Missing ']' in format string")
         if empty_attribute:
             raise ValueError("Empty attribute in format string")
@@ -219,8 +216,7 @@ class FormattableString(object):
     def format(self, *args, **kwargs):
         """Same as str.format() and unicode.format() in Python 2.6+."""
         if args:
-            kwargs.update(dict((str(i), value)
-                               for (i, value) in enumerate(args)))
+            kwargs.update({str(i): value for (i, value) in enumerate(args)})
         # Encode arguments to ASCII, if format string is bytes
         want_bytes = isinstance(self._string, str)
         params = {}

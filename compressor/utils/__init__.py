@@ -7,10 +7,7 @@ from compressor.exceptions import FilterError
 if sys.version_info < (2, 5):
     # Add any http://docs.python.org/library/functions.html?#any to Python < 2.5
     def any(seq):
-        for item in seq:
-            if item:
-                return True
-        return False
+        return any(seq)
 
 else:
     any = any

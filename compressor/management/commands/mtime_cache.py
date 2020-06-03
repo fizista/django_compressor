@@ -36,10 +36,9 @@ class Command(NoArgsCommand):
         Return True or False depending on whether the ``path`` should be
         ignored (if it matches any pattern in ``ignore_patterns``).
         """
-        for pattern in self.ignore_patterns:
-            if fnmatch.fnmatchcase(path, pattern):
-                return True
-        return False
+        return any(
+            fnmatch.fnmatchcase(path, pattern) for pattern in self.ignore_patterns
+        )
 
     def handle_noargs(self, **options):
         ignore_patterns = options['ignore_patterns']

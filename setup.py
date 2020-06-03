@@ -83,10 +83,7 @@ def find_package_data(where='.', package='',
                 if bad_name:
                     continue
                 if (os.path.isfile(os.path.join(fn, '__init__.py')) and not prefix):
-                    if not package:
-                        new_package = name
-                    else:
-                        new_package = package + '.' + name
+                    new_package = name if not package else package + '.' + name
                     stack.append((fn, '', new_package, False))
                 else:
                     stack.append((fn, prefix + name + '/', package, only_in_packages))
